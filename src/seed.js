@@ -1,15 +1,11 @@
-import CategoriaRepository from './repositories/CategoriaRepository.js';
-import UsuarioRepository from './repositories/UsuarioRepository.js';
-import NoticiaRepository from './repositories/NoticiaRepository.js';
+import categoriaRepo from './repositories/CategoriaRepository.js';
+import usuarioRepo from './repositories/UsuarioRepository.js';
+import noticiaRepo from './repositories/NoticiaRepository.js';
 import Categoria from './models/Categoria.js';
 import Autor from './models/Autor.js';
 import Administrador from './models/Administrador.js';
 import Noticia from './models/Noticia.js';
 import { gerarHash } from './utils/senha.js';
-
-const categoriaRepo = new CategoriaRepository();
-const usuarioRepo = new UsuarioRepository();
-const noticiaRepo = new NoticiaRepository();
 
 if (categoriaRepo.listar().length === 0) {
   const categorias = [

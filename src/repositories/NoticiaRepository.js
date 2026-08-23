@@ -6,7 +6,7 @@ import Noticia from '../models/Noticia.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CAMINHO = join(__dirname, '..', 'data', 'noticias.json');
 
-export default class NoticiaRepository extends JsonRepository {
+export class NoticiaRepository extends JsonRepository {
   constructor() {
     super(CAMINHO, (dados) => new Noticia(dados));
   }
@@ -19,3 +19,6 @@ export default class NoticiaRepository extends JsonRepository {
     return this.listar().filter((n) => n.publicada);
   }
 }
+
+// Singleton usado pela camada de service (papel do "model" do E3: dados + acesso)
+export default new NoticiaRepository();

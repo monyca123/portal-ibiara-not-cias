@@ -65,11 +65,15 @@ Noticia
 ```
 src/
   models/          Classes de domínio (POO)
-  repositories/     Camada de persistência (JSON), com JsonRepository genérico
-  routes/            Rotas Express (API REST)
-  data/              Arquivos JSON (dados persistidos)
-  server.js          Ponto de entrada da aplicação
-  seed.js            Popula dados iniciais de demonstração
+  repositories/     Persistência em JSON — papel de "model" do E3 (dados + acesso)
+  services/          Regras de negócio, lançam erros com status HTTP
+  controllers/        Lê req, chama o service, monta a resposta
+  routes/              Mapeamento URL + verbo HTTP → controller
+  middleware/          logger (toda requisição) + errorHandler (final)
+  data/                Arquivos JSON (dados persistidos)
+  app.js               Composição: middleware + rotas + error handler
+  server.js            Só o listen()
+  seed.js              Popula dados iniciais de demonstração
 public/
   index.html         Página inicial (lista + filtro de notícias)
   noticia.html        Detalhe da notícia + comentários

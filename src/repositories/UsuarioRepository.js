@@ -14,7 +14,7 @@ function fabricarUsuario(dados) {
   return new Autor(dados.nome, dados.email, dados.senhaHash, dados.biografia, dados.id);
 }
 
-export default class UsuarioRepository extends JsonRepository {
+export class UsuarioRepository extends JsonRepository {
   constructor() {
     super(CAMINHO, fabricarUsuario);
   }
@@ -23,3 +23,5 @@ export default class UsuarioRepository extends JsonRepository {
     return this.listar().find((u) => u.email === email) ?? null;
   }
 }
+
+export default new UsuarioRepository();
