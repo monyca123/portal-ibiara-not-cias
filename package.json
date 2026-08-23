@@ -1,0 +1,16 @@
+{
+  "name": "ibiara-noticias",
+  "version": "1.0.0",
+  "description": "Ibiara Noticias - Portal de noticias locais e gerais (Projeto 1 - Fullstack Basico)",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "seed": "node src/seed.js",
+    "dev": "node --watch src/server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
