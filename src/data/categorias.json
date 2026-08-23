@@ -1,0 +1,27 @@
+[
+  {
+    "id": "4cd45ec5-babe-4882-bea8-0b4bff66cbe7",
+    "nome": "Ibiara em Foco",
+    "tipo": "local"
+  },
+  {
+    "id": "9142175a-baf9-405f-ab9f-07e1c611a4e0",
+    "nome": "Regiao do Cariri",
+    "tipo": "local"
+  },
+  {
+    "id": "5cea92fc-ec7e-4d47-b628-06e44fb08d63",
+    "nome": "Politica Nacional",
+    "tipo": "geral"
+  },
+  {
+    "id": "25b879b5-3075-4e54-bd71-7c7f59607f04",
+    "nome": "Economia",
+    "tipo": "geral"
+  },
+  {
+    "id": "cf2e13e7-1a19-4bfc-a9f9-76fe39ab7539",
+    "nome": "Esportes",
+    "tipo": "geral"
+  }
+]
