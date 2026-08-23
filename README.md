@@ -78,8 +78,13 @@ public/
   index.html         Página inicial (lista + filtro de notícias)
   noticia.html        Detalhe da notícia + comentários
   login.html          Login de jornalista/administrador
-  admin.html           Painel de gestão de notícias (CRUD)
-  js/                  Scripts que consomem a API
+  admin.html           Painel de gestão de notícias e categorias (CRUD)
+  js/
+    config.js            URL base da API
+    api.js               Camada HTTP (fetch + tratamento de erro/204)
+    services/             Validação + chamada à api.js
+    ui/                    Views: renderizam o DOM, não sabem de HTTP
+    app.js / admin.js / noticia.js / login.js   Orquestradores (1 por página)
 ```
 
 ## Como rodar

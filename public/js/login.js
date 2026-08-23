@@ -1,3 +1,5 @@
+import { authService } from './services/authService.js';
+
 const formLoginEl = document.getElementById('form-login');
 const alertaErroEl = document.getElementById('alerta-erro');
 
@@ -10,20 +12,12 @@ formLoginEl.addEventListener('submit', async (evento) => {
   alertaErroEl.classList.add('d-none');
   const dados = Object.fromEntries(new FormData(formLoginEl));
 
-  const resp = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(dados),
-  });
-
-  if (!resp.ok) {
-    const erro = await resp.json();
-    alertaErroEl.textContent = erro.erro || 'Falha no login.';
+  try {
+    const usuario = await authService.login(dados);
+    sessionStorage.setItem('usuario', JSON.stringify(usuario));
+    window.location.href = 'admin.html';
+  } catch (err) {
+    alertaErroEl.textContent = err.message;
     alertaErroEl.classList.remove('d-none');
-    return;
   }
-
-  const usuario = await resp.json();
-  sessionStorage.setItem('usuario', JSON.stringify(usuario));
-  window.location.href = 'admin.html';
 });

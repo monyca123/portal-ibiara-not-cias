@@ -19,29 +19,60 @@
   </nav>
 
   <main class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="h4 mb-0">Gerenciar notícias</h1>
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-noticia" id="btn-nova-noticia">
-        + Nova notícia
-      </button>
-    </div>
+    <div id="alerta-admin" class="alert alert-danger d-none" role="alert"></div>
 
-    <div class="table-responsive">
-      <table class="table table-hover bg-white align-middle">
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Categoria</th>
-            <th>Autor</th>
-            <th>Visualizações</th>
-            <th>Status</th>
-            <th class="text-end">Ações</th>
-          </tr>
-        </thead>
-        <tbody id="tabela-noticias">
-          <tr><td colspan="6" class="text-center text-muted py-4">Carregando...</td></tr>
-        </tbody>
-      </table>
+    <div class="row g-4">
+      <!-- ===================== CATEGORIAS ===================== -->
+      <section class="col-lg-4">
+        <div class="card">
+          <div class="card-header bg-dark text-white fw-bold">Categorias</div>
+          <div class="card-body">
+            <form id="form-categoria" class="row g-2 mb-3">
+              <div class="col-12">
+                <input type="text" id="cat-nome" class="form-control" placeholder="Nome da categoria" required />
+              </div>
+              <div class="col-8">
+                <select id="cat-tipo" class="form-select" required>
+                  <option value="local">Local</option>
+                  <option value="geral">Geral</option>
+                </select>
+              </div>
+              <div class="col-4">
+                <button type="submit" class="btn btn-dark w-100">+</button>
+              </div>
+            </form>
+            <ul id="lista-categorias" class="list-group"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== NOTÍCIAS ===================== -->
+      <section class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h1 class="h4 mb-0">Gerenciar notícias</h1>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-noticia" id="btn-nova-noticia">
+            + Nova notícia
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover bg-white align-middle">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Categoria</th>
+                <th>Autor</th>
+                <th>Visualizações</th>
+                <th>Status</th>
+                <th class="text-end">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-noticias">
+              <tr><td colspan="6" class="text-center text-muted py-4">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -92,6 +123,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="js/admin.js"></script>
+  <script type="module" src="js/admin.js"></script>
 </body>
 </html>

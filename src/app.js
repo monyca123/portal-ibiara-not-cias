@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import noticiasRouter from './routes/noticias.js';
@@ -11,6 +12,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+app.use(cors()); // antes das rotas — middleware roda na ordem de registro
 app.use(express.json());
 app.use(logger);
 app.use(express.static(join(__dirname, '..', 'public')));

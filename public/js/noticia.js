@@ -1,3 +1,5 @@
+import { noticiaService } from './services/noticiaService.js';
+
 const conteudoEl = document.getElementById('noticia-conteudo');
 const comentariosEl = document.getElementById('lista-comentarios');
 const formComentarioEl = document.getElementById('form-comentario');
@@ -22,12 +24,14 @@ async function carregarNoticia() {
     return;
   }
 
-  const resp = await fetch(`/api/noticias/${encodeURIComponent(noticiaId)}`);
-  if (!resp.ok) {
+  let noticia;
+  try {
+    noticia = await noticiaService.buscarPorId(noticiaId);
+  } catch (_) {
     conteudoEl.innerHTML = '<p class="text-danger">Notícia não encontrada.</p>';
     return;
   }
-  const noticia = await resp.json();
+
   document.title = `${noticia.titulo} — Ibiara Notícias`;
 
   const data = new Date(noticia.criadoEm).toLocaleString('pt-BR');
@@ -62,18 +66,12 @@ formComentarioEl.addEventListener('submit', async (evento) => {
   evento.preventDefault();
   const dados = Object.fromEntries(new FormData(formComentarioEl));
 
-  const resp = await fetch(`/api/noticias/${encodeURIComponent(noticiaId)}/comentarios`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(dados),
-  });
-
-  if (resp.ok) {
+  try {
+    await noticiaService.comentar(noticiaId, dados);
     formComentarioEl.reset();
-    carregarNoticia();
-  } else {
-    const erro = await resp.json();
-    alert(erro.erro || 'Erro ao enviar comentário.');
+    await carregarNoticia();
+  } catch (err) {
+    alert(err.message);
   }
 });
 

@@ -1,3 +1,6 @@
+import { categoriaService } from './services/categoriaService.js';
+import { noticiaService } from './services/noticiaService.js';
+
 const listaNoticiasEl = document.getElementById('lista-noticias');
 const filtrosCategoriaEl = document.getElementById('filtros-categoria');
 
@@ -7,13 +10,17 @@ function escapeHtml(texto) {
   return div.innerHTML;
 }
 
+function imagemSegura(url) {
+  if (url && /^https?:\/\//i.test(url)) return url;
+  return 'https://placehold.co/600x300?text=Ibiara+Noticias';
+}
+
 let categorias = [];
 let filtroTipo = '';
 let filtroCategoriaId = '';
 
 async function carregarCategorias() {
-  const resp = await fetch('/api/categorias');
-  categorias = await resp.json();
+  categorias = await categoriaService.listar();
   renderizarFiltrosCategoria();
 }
 
@@ -24,7 +31,7 @@ function renderizarFiltrosCategoria() {
 
   const botoes = categoriasVisiveis
     .map(
-      (c) => `<button class="btn btn-sm btn-outline-secondary" data-categoria-id="${c.id}">${c.nome}</button>`
+      (c) => `<button class="btn btn-sm btn-outline-secondary" data-categoria-id="${c.id}">${escapeHtml(c.nome)}</button>`
     )
     .join('');
 
@@ -42,11 +49,6 @@ function renderizarFiltrosCategoria() {
   });
 }
 
-function imagemSegura(url) {
-  if (url && /^https?:\/\//i.test(url)) return url;
-  return 'https://placehold.co/600x300?text=Ibiara+Noticias';
-}
-
 function nomeCategoria(categoriaId) {
   return categorias.find((c) => c.id === categoriaId)?.nome ?? 'Sem categoria';
 }
@@ -57,10 +59,9 @@ function tipoCategoria(categoriaId) {
 
 async function carregarNoticias() {
   listaNoticiasEl.innerHTML = '<div class="col-12 text-center text-muted py-5">Carregando notícias...</div>';
-  const params = new URLSearchParams();
-  if (filtroCategoriaId) params.set('categoriaId', filtroCategoriaId);
-  const resp = await fetch(`/api/noticias?${params.toString()}`);
-  let noticias = await resp.json();
+  const params = {};
+  if (filtroCategoriaId) params.categoriaId = filtroCategoriaId;
+  let noticias = await noticiaService.listar(params);
 
   if (filtroTipo) {
     noticias = noticias.filter((n) => tipoCategoria(n.categoriaId) === filtroTipo);
