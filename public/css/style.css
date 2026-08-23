@@ -1,0 +1,36 @@
+body {
+  background-color: #f4f5f7;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.card-noticia {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-noticia:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.card-noticia .card-img-top {
+  height: 180px;
+  object-fit: cover;
+  background-color: #dee2e6;
+}
+
+.badge-categoria-local {
+  background-color: #198754;
+}
+
+.badge-categoria-geral {
+  background-color: #0d6efd;
+}
+
+footer {
+  background-color: #212529;
+  color: #adb5bd;
+}

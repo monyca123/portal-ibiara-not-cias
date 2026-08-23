@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ibiara Notícias — Painel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">📰 Ibiara Notícias — Painel</a>
+      <div>
+        <span id="usuario-logado" class="text-light small me-3"></span>
+        <button id="btn-sair" class="btn btn-outline-light btn-sm">Sair</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="h4 mb-0">Gerenciar notícias</h1>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-noticia" id="btn-nova-noticia">
+        + Nova notícia
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover bg-white align-middle">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Categoria</th>
+            <th>Autor</th>
+            <th>Visualizações</th>
+            <th>Status</th>
+            <th class="text-end">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-noticias">
+          <tr><td colspan="6" class="text-center text-muted py-4">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <div class="modal fade" id="modal-noticia" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="form-noticia">
+          <div class="modal-header">
+            <h5 class="modal-title">Nova notícia</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="id" />
+            <div class="mb-3">
+              <label class="form-label">Título</label>
+              <input type="text" class="form-control" name="titulo" required minlength="3" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Resumo</label>
+              <input type="text" class="form-control" name="resumo" placeholder="Opcional — gerado do conteúdo se vazio" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Conteúdo</label>
+              <textarea class="form-control" name="conteudo" rows="6" required minlength="10"></textarea>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" name="categoriaId" id="select-categoria" required></select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Imagem (URL, opcional)</label>
+                <input type="url" class="form-control" name="imagemUrl" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="publicada" id="check-publicada" checked />
+              <label class="form-check-label" for="check-publicada">Publicada</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
