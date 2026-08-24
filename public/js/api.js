@@ -21,7 +21,6 @@ async function request(caminho, opcoes = {}) {
 }
 
 export const api = {
-  // ---- Noticias ----
   getNoticias(params = {}) {
     const query = new URLSearchParams(params).toString();
     return request(`/api/noticias${query ? `?${query}` : ''}`);
@@ -32,11 +31,9 @@ export const api = {
   removerNoticia(id) { return request(`/api/noticias/${id}`, { method: 'DELETE' }); },
   comentarNoticia(id, dados) { return request(`/api/noticias/${id}/comentarios`, { method: 'POST', body: JSON.stringify(dados) }); },
 
-  // ---- Categorias ----
   getCategorias() { return request('/api/categorias'); },
   criarCategoria(dados) { return request('/api/categorias', { method: 'POST', body: JSON.stringify(dados) }); },
   removerCategoria(id) { return request(`/api/categorias/${id}`, { method: 'DELETE' }); },
 
-  // ---- Auth ----
   login(dados) { return request('/api/auth/login', { method: 'POST', body: JSON.stringify(dados) }); },
 };

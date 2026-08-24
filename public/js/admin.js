@@ -24,7 +24,6 @@ document.querySelector('#btn-sair').addEventListener('click', () => {
   window.location.href = 'login.html';
 });
 
-// ---- Categorias ----
 async function atualizarCategorias() {
   const categorias = await categoriaService.listar();
   categoriaView.renderLista(categorias, removerCategoria);
@@ -53,7 +52,6 @@ async function removerCategoria(id) {
   }
 }
 
-// ---- Noticias ----
 async function atualizarNoticias() {
   const noticias = await noticiaService.listar({ todas: 1 });
   noticiaView.renderTabela(noticias, editarNoticia, removerNoticia);
@@ -93,7 +91,6 @@ async function removerNoticia(id) {
   }
 }
 
-// ---- Inicializacao ----
 categoriaView.onSubmit(criarCategoria);
 noticiaView.onSubmit(salvarNoticia);
 noticiaView.onNovaNoticia(() => noticiaView.abrirParaCriar());
