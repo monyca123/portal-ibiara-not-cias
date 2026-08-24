@@ -10,7 +10,7 @@ import { gerarHash } from './utils/senha.js';
 if (categoriaRepo.listar().length === 0) {
   const categorias = [
     new Categoria('Ibiara em Foco', 'local'),
-    new Categoria('Regiao do Cariri', 'local'),
+    new Categoria('Regiao do Vale do Pianco', 'local'),
     new Categoria('Politica Nacional', 'geral'),
     new Categoria('Economia', 'geral'),
     new Categoria('Esportes', 'geral'),
@@ -46,11 +46,11 @@ if (noticiaRepo.listar().length === 0) {
       autorNome: autor.nome,
     }),
     new Noticia({
-      titulo: 'Feira agropecuaria do Cariri paraibano tem recorde de visitantes',
+      titulo: 'Feira agropecuaria do Vale do Pianco tem recorde de visitantes',
       resumo: 'Evento reuniu produtores de toda a regiao no ultimo final de semana.',
       conteudo:
-        'A feira agropecuaria da regiao do Cariri paraibano registrou o maior publico dos ultimos anos. Produtores rurais de varios municipios apresentaram seus produtos e o evento contou com palestras tecnicas sobre agricultura familiar e criacao de pequenos animais.',
-      categoriaId: categorias.find((c) => c.nome === 'Regiao do Cariri').id,
+        'A feira agropecuaria da regiao do Vale do Pianco registrou o maior publico dos ultimos anos. Produtores rurais de varios municipios apresentaram seus produtos e o evento contou com palestras tecnicas sobre agricultura familiar e criacao de pequenos animais.',
+      categoriaId: categorias.find((c) => c.nome === 'Regiao do Vale do Pianco').id,
       autorId: autor.id,
       autorNome: autor.nome,
     }),
