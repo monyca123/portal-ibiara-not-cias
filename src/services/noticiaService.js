@@ -1,4 +1,5 @@
 import noticiaRepo from '../repositories/NoticiaRepository.js';
+import categoriaRepo from '../repositories/CategoriaRepository.js';
 import Noticia from '../models/Noticia.js';
 
 function erro(mensagem, status) {
@@ -25,6 +26,9 @@ export const noticiaService = {
   },
 
   criar(dados) {
+    if (!dados.categoriaId || !categoriaRepo.buscarPorId(dados.categoriaId)) {
+      throw erro('Categoria informada nao existe.', 422);
+    }
     try {
       const noticia = new Noticia(dados);
       return noticiaRepo.adicionar(noticia);
@@ -36,6 +40,9 @@ export const noticiaService = {
   atualizar(id, dados) {
     const noticia = noticiaRepo.buscarPorId(id);
     if (!noticia) throw erro('Noticia nao encontrada.', 404);
+    if (dados.categoriaId && !categoriaRepo.buscarPorId(dados.categoriaId)) {
+      throw erro('Categoria informada nao existe.', 422);
+    }
     try {
       noticia.atualizar(dados);
     } catch (e) {

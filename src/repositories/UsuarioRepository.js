@@ -1,26 +1,38 @@
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-import JsonRepository from './JsonRepository.js';
+import { db } from '../db.js';
 import Autor from '../models/Autor.js';
 import Administrador from '../models/Administrador.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const CAMINHO = join(__dirname, '..', 'data', 'usuarios.json');
-
-function fabricarUsuario(dados) {
-  if (dados.papel === 'administrador') {
-    return new Administrador(dados.nome, dados.email, dados.senhaHash, dados.id);
+function paraModelo(row) {
+  if (row.papel === 'administrador') {
+    return new Administrador(row.nome, row.email, row.senha_hash, row.id);
   }
-  return new Autor(dados.nome, dados.email, dados.senhaHash, dados.biografia, dados.id);
+  return new Autor(row.nome, row.email, row.senha_hash, row.biografia, row.id);
 }
 
-export class UsuarioRepository extends JsonRepository {
-  constructor() {
-    super(CAMINHO, fabricarUsuario);
+export class UsuarioRepository {
+  listar() {
+    return db.prepare('SELECT * FROM usuarios').all().map(paraModelo);
+  }
+
+  buscarPorId(id) {
+    const row = db.prepare('SELECT * FROM usuarios WHERE id = ?').get(id);
+    return row ? paraModelo(row) : null;
   }
 
   buscarPorEmail(email) {
-    return this.listar().find((u) => u.email === email) ?? null;
+    const row = db.prepare('SELECT * FROM usuarios WHERE email = ?').get(email);
+    return row ? paraModelo(row) : null;
+  }
+
+  adicionar(usuario) {
+    db.prepare(
+      'INSERT INTO usuarios (id, nome, email, senha_hash, papel, biografia) VALUES (?, ?, ?, ?, ?, ?)'
+    ).run(usuario.id, usuario.nome, usuario.email, usuario.senhaHash, usuario.papel(), usuario.biografia ?? null);
+    return usuario;
+  }
+
+  remover(id) {
+    return db.prepare('DELETE FROM usuarios WHERE id = ?').run(id).changes > 0;
   }
 }
 

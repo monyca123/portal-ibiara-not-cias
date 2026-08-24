@@ -5,9 +5,9 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "start": "node src/server.js",
-    "seed": "node src/seed.js",
-    "dev": "node --watch src/server.js"
+    "start": "node --experimental-sqlite src/server.js",
+    "seed": "node --experimental-sqlite src/seed.js",
+    "dev": "node --experimental-sqlite --watch src/server.js"
   },
   "license": "MIT",
   "dependencies": {

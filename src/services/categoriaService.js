@@ -39,7 +39,13 @@ export const categoriaService = {
   },
 
   remover(id) {
-    const removido = categoriaRepo.remover(id);
-    if (!removido) throw erro('Categoria nao encontrada.', 404);
+    try {
+      const removido = categoriaRepo.remover(id);
+      if (!removido) throw erro('Categoria nao encontrada.', 404);
+    } catch (e) {
+      if (e.status) throw e;
+      // violacao de FOREIGN KEY: existem noticias apontando para esta categoria
+      throw erro('Nao e possivel remover: existem noticias nesta categoria.', 409);
+    }
   },
 };

@@ -3,9 +3,9 @@
 Portal de notícias locais (Ibiara/PB e região do Cariri) e gerais, desenvolvido como
 **Projeto 1 — Fullstack Básico** da disciplina de Programação Web (UEPB, 2026.1).
 
-Aplicação fullstack com API REST em Node.js/Express, persistência em arquivos JSON e
-frontend em HTML/CSS/Bootstrap, construída em cima de um modelo de domínio orientado a
-objetos que aplica os quatro pilares da POO.
+Aplicação fullstack com API REST em Node.js/Express, persistência em **SQLite**
+(SQL puro, sem ORM) e frontend em HTML/CSS/Bootstrap, construída em cima de um
+modelo de domínio orientado a objetos que aplica os quatro pilares da POO.
 
 ## Sumário
 
@@ -64,16 +64,16 @@ Noticia
 
 ```
 src/
+  db.js            Conexão SQLite (node:sqlite) + schema (CREATE TABLE)
   models/          Classes de domínio (POO)
-  repositories/     Persistência em JSON — papel de "model" do E3 (dados + acesso)
+  repositories/     SQL puro (prepared statements) — papel de "model" do E3/E5
   services/          Regras de negócio, lançam erros com status HTTP
-  controllers/        Lê req, chama o service, monta a resposta
-  routes/              Mapeamento URL + verbo HTTP → controller
-  middleware/          logger (toda requisição) + errorHandler (final)
-  data/                Arquivos JSON (dados persistidos)
-  app.js               Composição: middleware + rotas + error handler
-  server.js            Só o listen()
-  seed.js              Popula dados iniciais de demonstração
+  controllers/         Lê req, chama o service, monta a resposta
+  routes/                Mapeamento URL + verbo HTTP → controller
+  middleware/              logger (toda requisição) + errorHandler (final)
+  app.js                     Composição: middleware + rotas + error handler
+  server.js                    Só o listen()
+  seed.js                        Popula dados iniciais de demonstração
 public/
   index.html         Página inicial (lista + filtro de notícias)
   noticia.html        Detalhe da notícia + comentários
@@ -89,15 +89,18 @@ public/
 
 ## Como rodar
 
-Pré-requisitos: [Node.js LTS](https://nodejs.org/).
+Pré-requisitos: **Node.js 22+** (`node --version`) — usa o módulo nativo
+`node:sqlite`, ainda experimental (por isso os scripts já incluem a flag
+`--experimental-sqlite`).
 
 ```bash
 npm install
-npm run seed    # cria categorias, usuários e notícias de exemplo (só na 1a vez)
+npm run seed    # cria banco.db e popula categorias, usuários e notícias de exemplo
 npm start
 ```
 
-Acesse `http://localhost:3000`.
+Acesse `http://localhost:3000`. Os dados ficam em `banco.db` (SQLite, fora do
+Git) — pare o servidor e suba de novo para confirmar que persistem.
 
 **Login de demonstração** (painel `/admin.html`):
 - Administrador: `admin@ibiaranoticias.com.br` / `admin123`
@@ -118,6 +121,10 @@ Acesse `http://localhost:3000`.
 | PUT | `/api/categorias/:id` | Atualiza categoria |
 | DELETE | `/api/categorias/:id` | Remove categoria |
 | POST | `/api/auth/login` | Autentica usuário (retorna papel e permissões) |
+
+Regras de integridade aplicadas pelo banco (SQLite, `FOREIGN KEY` +
+`PRAGMA foreign_keys = ON`): criar/editar notícia com `categoriaId`
+inexistente → `422`; remover categoria com notícias vinculadas → `409`.
 
 ## Limitações conhecidas
 
