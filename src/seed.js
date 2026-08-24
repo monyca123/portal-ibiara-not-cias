@@ -53,6 +53,7 @@ if (noticiaRepo.listar().length === 0) {
       categoriaId: categorias.find((c) => c.nome === 'Regiao do Vale do Pianco').id,
       autorId: autor.id,
       autorNome: autor.nome,
+      criadoEm: '2026-06-10T14:30:00.000Z',
     }),
     new Noticia({
       titulo: 'Congresso Nacional retoma pauta economica nesta semana',
