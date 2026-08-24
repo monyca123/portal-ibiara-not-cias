@@ -44,6 +44,7 @@ if (noticiaRepo.listar().length === 0) {
       categoriaId: categorias.find((c) => c.nome === 'Ibiara em Foco').id,
       autorId: autor.id,
       autorNome: autor.nome,
+      criadoEm: '2026-05-20T09:00:00.000Z',
     }),
     new Noticia({
       titulo: 'Feira agropecuaria do Vale do Pianco tem recorde de visitantes',
@@ -63,6 +64,7 @@ if (noticiaRepo.listar().length === 0) {
       categoriaId: categorias.find((c) => c.nome === 'Politica Nacional').id,
       autorId: autor.id,
       autorNome: autor.nome,
+      criadoEm: '2026-04-15T10:00:00.000Z',
     }),
   ];
   noticias.forEach((n) => noticiaRepo.adicionar(n));
