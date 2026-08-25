@@ -12,7 +12,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
-app.use(cors()); // antes das rotas — middleware roda na ordem de registro
+app.use(cors());
 app.use(express.json());
 app.use(logger);
 app.use(express.static(join(__dirname, '..', 'public')));
