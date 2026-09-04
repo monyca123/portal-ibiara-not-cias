@@ -9,6 +9,7 @@ const params = new URLSearchParams(window.location.search);
 const voltar = params.get('voltar') || 'index.html';
 
 document.getElementById('link-entrar').href = `leitor-entrar.html?voltar=${encodeURIComponent(voltar)}`;
+document.getElementById('link-google').href = `/api/auth/google?voltar=${encodeURIComponent(voltar)}`;
 
 if (obterSessao()) {
   window.location.href = voltar;

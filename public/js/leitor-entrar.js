@@ -9,6 +9,12 @@ const params = new URLSearchParams(window.location.search);
 const voltar = params.get('voltar') || 'index.html';
 
 document.getElementById('link-cadastro').href = `leitor-cadastro.html?voltar=${encodeURIComponent(voltar)}`;
+document.getElementById('link-google').href = `/api/auth/google?voltar=${encodeURIComponent(voltar)}`;
+
+if (params.get('erro') === 'google') {
+  alertaEl.textContent = 'Nao foi possivel entrar com o Google. Tente novamente.';
+  alertaEl.classList.remove('d-none');
+}
 
 if (obterSessao()) {
   window.location.href = voltar;

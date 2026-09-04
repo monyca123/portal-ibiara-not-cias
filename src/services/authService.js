@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import usuarioRepo from '../repositories/UsuarioRepository.js';
 import Autor from '../models/Autor.js';
 import Leitor from '../models/Leitor.js';
@@ -54,5 +55,17 @@ export const authService = {
     const leitor = new Leitor(nome, email, gerarHash(senha));
     usuarioRepo.adicionar(leitor);
     return paraPublico(leitor);
+  },
+
+  // Login social: acha a conta pelo email do Google, ou cria uma nova
+  // (com uma senha aleatoria e inutilizavel — essa conta so entra via
+  // Google, nunca por senha, mas o campo senha_hash e obrigatorio no banco).
+  loginOuCriarComGoogle({ nome, email }) {
+    let usuario = usuarioRepo.buscarPorEmail(email);
+    if (!usuario) {
+      usuario = new Leitor(nome, email, gerarHash(randomUUID()));
+      usuarioRepo.adicionar(usuario);
+    }
+    return paraPublico(usuario);
   },
 };
