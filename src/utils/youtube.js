@@ -56,11 +56,14 @@ export async function canalEstaAoVivo(canalId) {
   return aoVivo;
 }
 
-// Achar o ultimo video do canal quando ele nao esta ao vivo. O feed RSS
-// publico do YouTube seria o jeito mais simples, mas alguns canais
-// devolvem 404 nele (confirmado na pratica, sem explicacao clara do
-// YouTube) — entao usamos o feed como primeira tentativa, mais rapida, e
-// caimos pra ler a propria pagina "/videos" do canal quando ele falhar.
+// Achar o ultimo conteudo publicado pelo canal quando ele nao esta ao
+// vivo. O YouTube separa uploads normais ("/videos") de replays de
+// transmissao ("/streams") em abas diferentes — um canal que faz lives
+// quase sempre tem o conteudo mais recente nos replays, nao nos uploads.
+// Por isso buscamos os dois candidatos e comparamos a data real de
+// publicacao de cada um (lida da propria pagina do video) pra saber
+// qual mostrar. O feed RSS publico seria mais barato, mas alguns canais
+// devolvem 404 nele (confirmado na pratica, sem explicacao do YouTube).
 const cacheUltimoVideo = new Map();
 
 export async function ultimoVideoDoCanal(canalId) {
@@ -69,7 +72,19 @@ export async function ultimoVideoDoCanal(canalId) {
   const emCache = cacheUltimoVideo.get(canalId);
   if (emCache && emCache.expiraEm > Date.now()) return emCache.videoId;
 
-  const videoId = (await ultimoVideoViaFeed(canalId)) || (await ultimoVideoViaPaginaDeVideos(canalId));
+  const candidatos = [
+    ...new Set(
+      (
+        await Promise.all([
+          ultimoVideoViaFeed(canalId),
+          ultimoVideoViaPagina(canalId, 'videos'),
+          ultimoVideoViaPagina(canalId, 'streams'),
+        ])
+      ).filter(Boolean)
+    ),
+  ];
+
+  const videoId = await maisRecente(candidatos);
 
   cacheUltimoVideo.set(canalId, { videoId, expiraEm: Date.now() + 5 * 60_000 });
   return videoId;
@@ -87,9 +102,9 @@ async function ultimoVideoViaFeed(canalId) {
   }
 }
 
-async function ultimoVideoViaPaginaDeVideos(canalId) {
+async function ultimoVideoViaPagina(canalId, aba) {
   try {
-    const resp = await fetch(`https://www.youtube.com/channel/${canalId}/videos`, {
+    const resp = await fetch(`https://www.youtube.com/channel/${canalId}/${aba}`, {
       headers: { 'User-Agent': 'Mozilla/5.0' },
     });
     if (!resp.ok) return '';
@@ -99,4 +114,29 @@ async function ultimoVideoViaPaginaDeVideos(canalId) {
   } catch (_) {
     return '';
   }
+}
+
+async function dataPublicacao(videoId) {
+  try {
+    const resp = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+    });
+    if (!resp.ok) return null;
+    const html = await resp.text();
+    const m = html.match(/itemprop="uploadDate" content="([^"]+)"/);
+    return m ? new Date(m[1]) : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+async function maisRecente(candidatos) {
+  if (candidatos.length === 0) return '';
+  if (candidatos.length === 1) return candidatos[0];
+
+  const comDatas = await Promise.all(
+    candidatos.map(async (id) => ({ id, data: await dataPublicacao(id) }))
+  );
+  comDatas.sort((a, b) => (b.data?.getTime() ?? 0) - (a.data?.getTime() ?? 0));
+  return comDatas[0].id;
 }
