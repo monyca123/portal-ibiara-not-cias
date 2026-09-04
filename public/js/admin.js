@@ -10,6 +10,9 @@ const usuarioLogado = obterSessao();
 if (!usuarioLogado || usuarioLogado.papel === 'leitor') {
   window.location.href = 'login.html';
 }
+// window.location.href nao interrompe a execucao do script — os
+// proximos blocos so mexem no DOM/dados quando ha sessao valida,
+// enquanto o navegador processa o redirecionamento acima.
 
 const alerta = document.querySelector('#alerta-admin');
 const sucesso = document.querySelector('#sucesso-admin');
@@ -29,7 +32,9 @@ function mostrarSucesso(msg) {
   setTimeout(() => sucesso.classList.add('d-none'), 4000);
 }
 
-document.querySelector('#usuario-logado').textContent = `${usuarioLogado.nome} (${usuarioLogado.papel})`;
+if (usuarioLogado) {
+  document.querySelector('#usuario-logado').textContent = `${usuarioLogado.nome} (${usuarioLogado.papel})`;
+}
 document.querySelector('#btn-sair').addEventListener('click', () => {
   encerrarSessao();
   window.location.href = 'login.html';
