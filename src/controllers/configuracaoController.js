@@ -1,8 +1,8 @@
 import { configuracaoService } from '../services/configuracaoService.js';
 
 export const configuracaoController = {
-  obter(req, res) {
-    res.json(configuracaoService.obter().toJSON());
+  async obter(req, res) {
+    res.json(await configuracaoService.obter());
   },
 
   async atualizar(req, res) {

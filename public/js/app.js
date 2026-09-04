@@ -45,16 +45,33 @@ async function carregarVideoDestaque() {
   }
 
   const secaoEl = document.getElementById('video-destaque-secao');
+  const iframeWrapEl = document.getElementById('video-destaque-iframe-wrap');
   const iframeEl = document.getElementById('video-destaque-iframe');
+  const offlineEl = document.getElementById('video-destaque-offline');
   const tituloEl = document.getElementById('video-destaque-titulo');
 
   if (config.videoDestaqueId && idYoutubeValido(config.videoDestaqueId)) {
     iframeEl.src = `https://www.youtube.com/embed/${config.videoDestaqueId}`;
     tituloEl.textContent = '🎬 Vídeo em destaque';
+    iframeWrapEl.classList.remove('d-none');
+    offlineEl.classList.add('d-none');
+    secaoEl.classList.remove('d-none');
+  } else if (config.canalYoutubeId && idYoutubeValido(config.canalYoutubeId) && !config.aoVivo && config.ultimoVideoId) {
+    iframeEl.src = `https://www.youtube.com/embed/${config.ultimoVideoId}`;
+    tituloEl.textContent = '🎬 Último vídeo do canal';
+    iframeWrapEl.classList.remove('d-none');
+    offlineEl.classList.add('d-none');
+    secaoEl.classList.remove('d-none');
+  } else if (config.canalYoutubeId && idYoutubeValido(config.canalYoutubeId) && !config.aoVivo) {
+    tituloEl.textContent = '📡 Transmissão ao vivo';
+    iframeWrapEl.classList.add('d-none');
+    offlineEl.classList.remove('d-none');
     secaoEl.classList.remove('d-none');
   } else if (config.canalYoutubeId && idYoutubeValido(config.canalYoutubeId)) {
     iframeEl.src = `https://www.youtube.com/embed/live_stream?channel=${config.canalYoutubeId}`;
     tituloEl.textContent = '📡 Ao vivo agora';
+    iframeWrapEl.classList.remove('d-none');
+    offlineEl.classList.add('d-none');
     secaoEl.classList.remove('d-none');
   }
 }

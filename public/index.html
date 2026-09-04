@@ -37,7 +37,7 @@
   <main class="container mb-5">
     <section id="video-destaque-secao" class="my-4 d-none">
       <h2 class="h5 mb-2" id="video-destaque-titulo">📡 Ao vivo agora</h2>
-      <div class="ratio ratio-16x9">
+      <div id="video-destaque-iframe-wrap" class="ratio ratio-16x9 d-none">
         <iframe
           id="video-destaque-iframe"
           src=""
@@ -45,6 +45,9 @@
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
         ></iframe>
+      </div>
+      <div id="video-destaque-offline" class="alert alert-secondary d-none mb-0">
+        📴 Sem transmissão ao vivo no momento. Volte mais tarde para acompanhar!
       </div>
     </section>
 

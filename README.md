@@ -182,13 +182,21 @@ A home mostra um vídeo do YouTube em destaque, configurável pelo admin em
 - **ID do canal** preenchido → mostra a **live atual do canal**
   automaticamente (`youtube.com/embed/live_stream?channel=...`) — ideal
   pra transmissão diária, nunca precisa atualizar na mão.
+- Fora do horário da transmissão, o backend confere se o canal está
+  mesmo ao vivo (`/channel/:id/live` redireciona pra um vídeo real só
+  quando há transmissão) e, se não estiver, mostra automaticamente o
+  **último vídeo publicado no canal** em vez do erro cru do YouTube.
 - **Vídeo específico** preenchido → esse vídeo aparece no lugar da live
   (o admin pode colar o link completo do YouTube; o ID é extraído
-  automaticamente).
+  automaticamente) e tem prioridade sobre tudo o resto.
 - Nenhum dos dois preenchido → a seção de vídeo simplesmente não aparece.
+- Aceita colar o **link do canal com @handle** (ex.: `youtube.com/@nome`)
+  no campo de canal — o backend resolve pro ID `UC...` sozinho.
 
 Guardado numa única linha da tabela `configuracoes` (sem tabela nova por
 campo — é literalmente "configuração do site", não conteúdo do domínio).
+`aoVivo` e `ultimoVideoId` não são salvos — são calculados a cada
+requisição (com cache de 1-5 min) direto do YouTube.
 
 ## Limitações conhecidas
 
