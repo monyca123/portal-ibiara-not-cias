@@ -1,5 +1,6 @@
 import { categoriaService } from './services/categoriaService.js';
 import { noticiaService } from './services/noticiaService.js';
+import { configuracaoService } from './services/configuracaoService.js';
 import { categoriaView } from './ui/categoriaView.js';
 import { noticiaView } from './ui/noticiaView.js';
 import { moderacaoView } from './ui/moderacaoView.js';
@@ -11,7 +12,9 @@ if (!usuarioLogado || usuarioLogado.papel === 'leitor') {
 }
 
 const alerta = document.querySelector('#alerta-admin');
+const sucesso = document.querySelector('#sucesso-admin');
 function mostrarErro(msg) {
+  sucesso.classList.add('d-none');
   alerta.textContent = msg;
   alerta.classList.remove('d-none');
 }
@@ -19,12 +22,46 @@ function limparErro() {
   alerta.classList.add('d-none');
   alerta.textContent = '';
 }
+function mostrarSucesso(msg) {
+  alerta.classList.add('d-none');
+  sucesso.textContent = msg;
+  sucesso.classList.remove('d-none');
+  setTimeout(() => sucesso.classList.add('d-none'), 4000);
+}
 
 document.querySelector('#usuario-logado').textContent = `${usuarioLogado.nome} (${usuarioLogado.papel})`;
 document.querySelector('#btn-sair').addEventListener('click', () => {
   encerrarSessao();
   window.location.href = 'login.html';
 });
+
+async function carregarConfiguracao() {
+  const config = await configuracaoService.obter();
+  document.querySelector('#config-canal').value = config.canalYoutubeId || '';
+  document.querySelector('#config-video').value = config.videoDestaqueId || '';
+}
+
+async function salvarConfiguracao(evento) {
+  evento.preventDefault();
+  limparErro();
+  const btn = document.querySelector('#form-config button[type=submit]');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+  try {
+    await configuracaoService.atualizar({
+      canalYoutubeId: document.querySelector('#config-canal').value,
+      videoDestaqueId: document.querySelector('#config-video').value,
+    });
+    await carregarConfiguracao();
+    mostrarSucesso('Vídeo em destaque atualizado — já vale na home.');
+  } catch (err) {
+    mostrarErro(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Salvar vídeo em destaque';
+  }
+}
+document.querySelector('#form-config').addEventListener('submit', salvarConfiguracao);
 
 async function atualizarCategorias() {
   const categorias = await categoriaService.listar();
@@ -121,6 +158,7 @@ noticiaView.onNovaNoticia(() => noticiaView.abrirParaCriar());
 
 async function iniciar() {
   try {
+    await carregarConfiguracao();
     await atualizarCategorias();
     await atualizarNoticias();
   } catch (err) {

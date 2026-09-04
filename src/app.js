@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path';
 import noticiasRouter from './routes/noticias.js';
 import categoriasRouter from './routes/categorias.js';
 import authRouter from './routes/auth.js';
+import configuracaoRouter from './routes/configuracao.js';
 import { logger } from './middleware/logger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -20,6 +21,7 @@ app.use(express.static(join(__dirname, '..', 'public')));
 app.use('/api/noticias', noticiasRouter);
 app.use('/api/categorias', categoriasRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/configuracao', configuracaoRouter);
 
 app.use((req, res) => {
   res.status(404).json({ erro: 'Rota nao encontrada.' });

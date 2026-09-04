@@ -20,6 +20,33 @@
 
   <main class="container my-5">
     <div id="alerta-admin" class="alert alert-danger d-none" role="alert"></div>
+    <div id="sucesso-admin" class="alert alert-success d-none" role="alert"></div>
+
+    <div class="row g-4 mb-1">
+      <!-- ===================== VÍDEO EM DESTAQUE ===================== -->
+      <section class="col-12">
+        <div class="card">
+          <div class="card-header bg-dark text-white fw-bold">Vídeo em destaque (YouTube)</div>
+          <div class="card-body">
+            <form id="form-config" class="row g-3 align-items-end">
+              <div class="col-md-6">
+                <label for="config-canal" class="form-label">ID do canal (mostra a live automaticamente)</label>
+                <input type="text" id="config-canal" class="form-control" placeholder="Ex: UCxxxxxxxxxxxxxxxxxxxxxx" />
+                <div class="form-text">Fica em youtube.com → seu canal → Configurações avançadas do canal.</div>
+              </div>
+              <div class="col-md-6">
+                <label for="config-video" class="form-label">Ou um vídeo específico em destaque</label>
+                <input type="text" id="config-video" class="form-control" placeholder="Cole o link do vídeo do YouTube" />
+                <div class="form-text">Se preenchido, aparece no lugar da live. Deixe em branco pra voltar à live.</div>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary">Salvar vídeo em destaque</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <div class="row g-4">
       <!-- ===================== CATEGORIAS ===================== -->

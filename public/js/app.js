@@ -1,5 +1,6 @@
 import { categoriaService } from './services/categoriaService.js';
 import { noticiaService } from './services/noticiaService.js';
+import { configuracaoService } from './services/configuracaoService.js';
 import { obterSessao, encerrarSessao } from './sessao.js';
 
 const listaNoticiasEl = document.getElementById('lista-noticias');
@@ -29,6 +30,33 @@ function escapeHtml(texto) {
 function imagemSegura(url) {
   if (url && /^https?:\/\//i.test(url)) return url;
   return 'https://placehold.co/600x300?text=Ibiara+Noticias';
+}
+
+function idYoutubeValido(id) {
+  return /^[\w-]+$/.test(id);
+}
+
+async function carregarVideoDestaque() {
+  let config;
+  try {
+    config = await configuracaoService.obter();
+  } catch (_) {
+    return; // sem configuracao, a home funciona normal sem o video
+  }
+
+  const secaoEl = document.getElementById('video-destaque-secao');
+  const iframeEl = document.getElementById('video-destaque-iframe');
+  const tituloEl = document.getElementById('video-destaque-titulo');
+
+  if (config.videoDestaqueId && idYoutubeValido(config.videoDestaqueId)) {
+    iframeEl.src = `https://www.youtube.com/embed/${config.videoDestaqueId}`;
+    tituloEl.textContent = '🎬 Vídeo em destaque';
+    secaoEl.classList.remove('d-none');
+  } else if (config.canalYoutubeId && idYoutubeValido(config.canalYoutubeId)) {
+    iframeEl.src = `https://www.youtube.com/embed/live_stream?channel=${config.canalYoutubeId}`;
+    tituloEl.textContent = '📡 Ao vivo agora';
+    secaoEl.classList.remove('d-none');
+  }
 }
 
 let categorias = [];
@@ -130,3 +158,4 @@ document.querySelectorAll('[data-filtro-tipo]').forEach((link) => {
 });
 
 carregarCategorias().then(carregarNoticias);
+carregarVideoDestaque();

@@ -74,6 +74,7 @@ src/
   routes/                Mapeamento URL + verbo HTTP → controller
   middleware/              logger + errorHandler + auth (exigirLogin/exigirAdmin)
   utils/token.js             Emite e verifica os tokens de login (JWT)
+  utils/googleClient.js       Configura o OAuth2Client do login com Google
   app.js                     Composição: middleware + rotas + error handler
   server.js                    Só o listen()
   seed.js                        Popula dados iniciais de demonstração
@@ -137,6 +138,10 @@ uma conta de leitor com email e senha.
 | POST | `/api/auth/login` | — | Autentica (autor/administrador/leitor) e devolve um token |
 | POST | `/api/auth/registro` | — | Cadastra um novo jornalista (papel `autor`) |
 | POST | `/api/auth/registro-leitor` | — | Cadastra um novo leitor (só pode comentar) |
+| GET | `/api/auth/google` | — | Redireciona para o login do Google |
+| GET | `/api/auth/google/callback` | — | Volta do Google, cria/loga o leitor e emite o token |
+| GET | `/api/configuracao` | — | Lê o vídeo em destaque atual (canal/vídeo do YouTube) |
+| PUT | `/api/configuracao` | admin | Define o vídeo em destaque da home |
 
 Rotas marcadas **staff** exigem `Authorization: Bearer <token>` de um
 `autor`/`administrador`; **leitor** aceita qualquer papel autenticado;
@@ -156,20 +161,34 @@ leitor não precisa logar de novo a cada aba) e o `api.js` anexa
 middleware `exigirLogin` valida o token e recarrega o usuário do banco a
 cada requisição; `exigirAdmin` restringe ainda mais (usado na moderação).
 
-## Roadmap: login social (Google/Instagram)
+## Login social
 
-Login com Google e Instagram foi planejado mas **não está ativo** — ambos
-exigem credenciais de OAuth que só o dono do projeto pode gerar:
+**Google já está ativo** — `GET /api/auth/google` leva ao consentimento do
+Google; a volta (`/api/auth/google/callback`) acha ou cria a conta de
+`Leitor` pelo email e emite o mesmo token JWT do login por senha. Precisa
+de `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` no `.env` (veja
+`atividades/google-oauth-passo-a-passo.md` para gerar as credenciais).
 
-- **Google**: crie um projeto em [console.cloud.google.com](https://console.cloud.google.com/),
-  configure a tela de consentimento OAuth e gere um Client ID/Secret
-  (leva uns 5 minutos). Preencha `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`
-  no `.env` — a partir daí é adicionar a estratégia `passport-google-oauth20`
-  emitindo o mesmo token JWT que o login por senha já emite hoje.
-- **Instagram**: hoje passa pelo Meta/Facebook Login. Funciona para
-  desenvolvedores/testadores imediatamente, mas exige **revisão do app
-  pela Meta** (dias, com política de privacidade e verificação de negócio)
-  para funcionar com qualquer usuário público.
+**Instagram** ainda não está — hoje passa pelo Meta/Facebook Login, que
+exige **revisão do app pela Meta** (dias, com política de privacidade e
+verificação de negócio) para funcionar com qualquer usuário público, não
+só desenvolvedores/testadores cadastrados.
+
+## Vídeo em destaque (YouTube)
+
+A home mostra um vídeo do YouTube em destaque, configurável pelo admin em
+`/admin.html` sem precisar mexer no código:
+
+- **ID do canal** preenchido → mostra a **live atual do canal**
+  automaticamente (`youtube.com/embed/live_stream?channel=...`) — ideal
+  pra transmissão diária, nunca precisa atualizar na mão.
+- **Vídeo específico** preenchido → esse vídeo aparece no lugar da live
+  (o admin pode colar o link completo do YouTube; o ID é extraído
+  automaticamente).
+- Nenhum dos dois preenchido → a seção de vídeo simplesmente não aparece.
+
+Guardado numa única linha da tabela `configuracoes` (sem tabela nova por
+campo — é literalmente "configuração do site", não conteúdo do domínio).
 
 ## Limitações conhecidas
 

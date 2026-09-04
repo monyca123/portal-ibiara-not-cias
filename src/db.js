@@ -50,4 +50,12 @@ db.exec(`
     FOREIGN KEY (noticia_id) REFERENCES noticias(id) ON DELETE CASCADE,
     FOREIGN KEY (leitor_id) REFERENCES usuarios(id)
   );
+
+  -- Linha unica (id = 'global') com as configuracoes do site editaveis
+  -- pelo administrador sem precisar mexer no codigo.
+  CREATE TABLE IF NOT EXISTS configuracoes (
+    id                TEXT PRIMARY KEY,
+    canal_youtube_id  TEXT,
+    video_destaque_id TEXT
+  );
 `);

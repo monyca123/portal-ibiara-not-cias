@@ -43,4 +43,7 @@ export const api = {
 
   login(dados) { return request('/api/auth/login', { method: 'POST', body: JSON.stringify(dados) }); },
   registrarLeitor(dados) { return request('/api/auth/registro-leitor', { method: 'POST', body: JSON.stringify(dados) }); },
+
+  getConfiguracao() { return request('/api/configuracao'); },
+  atualizarConfiguracao(dados) { return request('/api/configuracao', { method: 'PUT', body: JSON.stringify(dados) }); },
 };
