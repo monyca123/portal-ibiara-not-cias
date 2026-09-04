@@ -1,4 +1,5 @@
 import { authService } from './services/authService.js';
+import { salvarSessaoStaff } from './sessao.js';
 
 const formLoginEl = document.getElementById('form-login');
 const alertaErroEl = document.getElementById('alerta-erro');
@@ -14,7 +15,7 @@ formLoginEl.addEventListener('submit', async (evento) => {
 
   try {
     const usuario = await authService.login(dados);
-    sessionStorage.setItem('usuario', JSON.stringify(usuario));
+    salvarSessaoStaff(usuario);
     window.location.href = 'admin.html';
   } catch (err) {
     alertaErroEl.textContent = err.message;

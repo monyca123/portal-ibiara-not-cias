@@ -20,7 +20,7 @@ db.exec(`
     nome       TEXT NOT NULL,
     email      TEXT NOT NULL UNIQUE,
     senha_hash TEXT NOT NULL,
-    papel      TEXT NOT NULL CHECK (papel IN ('autor', 'administrador')),
+    papel      TEXT NOT NULL CHECK (papel IN ('autor', 'administrador', 'leitor')),
     biografia  TEXT
   );
 
@@ -43,9 +43,11 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS comentarios (
     id         TEXT PRIMARY KEY,
     noticia_id TEXT NOT NULL,
+    leitor_id  TEXT NOT NULL,
     autor_nome TEXT NOT NULL,
     texto      TEXT NOT NULL,
     criado_em  TEXT NOT NULL,
-    FOREIGN KEY (noticia_id) REFERENCES noticias(id) ON DELETE CASCADE
+    FOREIGN KEY (noticia_id) REFERENCES noticias(id) ON DELETE CASCADE,
+    FOREIGN KEY (leitor_id) REFERENCES usuarios(id)
   );
 `);

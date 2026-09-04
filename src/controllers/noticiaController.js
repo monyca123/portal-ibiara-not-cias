@@ -27,7 +27,12 @@ export const noticiaController = {
   },
 
   adicionarComentario(req, res) {
-    const comentario = noticiaService.adicionarComentario(req.params.id, req.body);
+    const comentario = noticiaService.adicionarComentario(req.params.id, req.usuario, req.body);
     res.status(201).json(comentario.toJSON());
+  },
+
+  removerComentario(req, res) {
+    noticiaService.removerComentario(req.params.id, req.params.comentarioId);
+    res.status(204).end();
   },
 };

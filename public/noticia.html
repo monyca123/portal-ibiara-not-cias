@@ -24,18 +24,21 @@
 
     <section id="secao-comentarios">
       <h4>Comentários</h4>
-      <div id="lista-comentarios" class="mb-4"></div>
+      <div id="lista-comentarios" class="mb-4" aria-live="polite"></div>
 
-      <form id="form-comentario" class="card card-body">
+      <div id="prompt-login" class="alert alert-secondary d-none">
+        Você precisa <a id="link-entrar" href="leitor-entrar.html">entrar</a> ou
+        <a id="link-cadastro" href="leitor-cadastro.html">criar uma conta</a> para comentar.
+      </div>
+
+      <form id="form-comentario" class="card card-body d-none">
+        <p class="small text-muted mb-2">Comentando como <strong id="comentario-usuario"></strong></p>
         <div class="mb-3">
-          <label class="form-label">Seu nome</label>
-          <input type="text" class="form-control" name="autorNome" placeholder="Anônimo" />
+          <label for="comentario-texto" class="form-label">Comentário</label>
+          <textarea id="comentario-texto" class="form-control" name="texto" rows="3" required></textarea>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Comentário</label>
-          <textarea class="form-control" name="texto" rows="3" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Enviar comentário</button>
+        <div id="comentario-erro" class="alert alert-danger d-none" role="alert"></div>
+        <button type="submit" class="btn btn-primary" id="btn-enviar-comentario">Enviar comentário</button>
       </form>
     </section>
   </main>

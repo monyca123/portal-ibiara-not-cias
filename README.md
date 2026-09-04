@@ -30,12 +30,14 @@ categoria/tipo e comentam nas matérias.
 ```
 Usuario (abstrata)
  ├── Autor
- └── Administrador
+ ├── Administrador
+ └── Leitor         (só permissão de comentar — cadastro público)
 
 Categoria
 
 Noticia
- └── Comentario  (composição — comentário não existe sem a notícia)
+ └── Comentario  (composição — comentário não existe sem a notícia; e
+                  exige um Leitor autenticado, papel(): 'leitor')
 ```
 
 **Relações entre classes:**
@@ -55,8 +57,8 @@ Noticia
 - **Herança** — `Autor` e `Administrador` estendem `Usuario`, reaproveitando
   atributos (`nome`, `email`, `senhaHash`) e a serialização base.
 - **Polimorfismo** — `permissoes()` e `papel()` têm implementações diferentes em
-  `Autor` e `Administrador`; o código que consome `Usuario` não precisa saber qual
-  subclasse está tratando.
+  `Autor`, `Administrador` e `Leitor`; o código que consome `Usuario` (como o
+  middleware de autenticação) não precisa saber qual subclasse está tratando.
 - **Abstração** — `Usuario` é uma classe abstrata: `new Usuario(...)` lança erro
   (verificado via `new.target`), só suas subclasses podem ser instanciadas.
 
@@ -70,21 +72,25 @@ src/
   services/          Regras de negócio, lançam erros com status HTTP
   controllers/         Lê req, chama o service, monta a resposta
   routes/                Mapeamento URL + verbo HTTP → controller
-  middleware/              logger (toda requisição) + errorHandler (final)
+  middleware/              logger + errorHandler + auth (exigirLogin/exigirAdmin)
+  utils/token.js             Emite e verifica os tokens de login (JWT)
   app.js                     Composição: middleware + rotas + error handler
   server.js                    Só o listen()
   seed.js                        Popula dados iniciais de demonstração
 public/
   index.html         Página inicial (lista + filtro de notícias)
-  noticia.html        Detalhe da notícia + comentários
+  noticia.html        Detalhe da notícia + comentários (exige leitor logado)
   login.html          Login de jornalista/administrador
-  admin.html           Painel de gestão de notícias e categorias (CRUD)
+  leitor-entrar.html   Login de leitor (comentar)
+  leitor-cadastro.html  Cadastro de leitor
+  admin.html             Painel: notícias, categorias e moderação de comentários
   js/
     config.js            URL base da API
-    api.js               Camada HTTP (fetch + tratamento de erro/204)
-    services/             Validação + chamada à api.js
-    ui/                    Views: renderizam o DOM, não sabem de HTTP
-    app.js / admin.js / noticia.js / login.js   Orquestradores (1 por página)
+    api.js               Camada HTTP (fetch + token automático + erro/204)
+    sessao.js             Onde fica salvo quem está logado (staff x leitor)
+    services/              Validação + chamada à api.js
+    ui/                     Views: renderizam o DOM, não sabem de HTTP
+    app.js / admin.js / noticia.js / login.js / leitor-entrar.js / leitor-cadastro.js
 ```
 
 ## Como rodar
@@ -102,33 +108,73 @@ npm start
 Acesse `http://localhost:3000`. Os dados ficam em `banco.db` (SQLite, fora do
 Git) — pare o servidor e suba de novo para confirmar que persistem.
 
+Copie `.env.example` para `.env` antes de rodar em produção e gere uma
+`JWT_SECRET` própria (o `.env` local de desenvolvimento já vem com uma
+gerada automaticamente).
+
 **Login de demonstração** (painel `/admin.html`):
 - Administrador: `admin@ibiaranoticias.com.br` / `admin123`
 - Autora: `maria@ibiaranoticias.com.br` / `autora123`
 
+**Comentar** (`/leitor-cadastro.html`) é aberto a qualquer pessoa — cria
+uma conta de leitor com email e senha.
+
 ## Rotas da API
 
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/api/noticias` | Lista notícias publicadas (filtros: `categoriaId`, `todas`) |
-| GET | `/api/noticias/:id` | Detalhe de uma notícia (incrementa visualizações) |
-| POST | `/api/noticias` | Cria notícia |
-| PUT | `/api/noticias/:id` | Atualiza notícia |
-| DELETE | `/api/noticias/:id` | Remove notícia |
-| POST | `/api/noticias/:id/comentarios` | Adiciona comentário |
-| GET | `/api/categorias` | Lista categorias |
-| POST | `/api/categorias` | Cria categoria |
-| PUT | `/api/categorias/:id` | Atualiza categoria |
-| DELETE | `/api/categorias/:id` | Remove categoria |
-| POST | `/api/auth/login` | Autentica usuário (retorna papel e permissões) |
+| Método | Rota | Auth | Descrição |
+|---|---|---|---|
+| GET | `/api/noticias` | — | Lista notícias publicadas (filtros: `categoriaId`, `todas`) |
+| GET | `/api/noticias/:id` | — | Detalhe de uma notícia (incrementa visualizações) |
+| POST | `/api/noticias` | staff | Cria notícia |
+| PUT | `/api/noticias/:id` | staff | Atualiza notícia |
+| DELETE | `/api/noticias/:id` | staff | Remove notícia |
+| POST | `/api/noticias/:id/comentarios` | leitor | Adiciona comentário (nome vem da conta logada) |
+| DELETE | `/api/noticias/:id/comentarios/:comentarioId` | admin | Remove comentário (moderação) |
+| GET | `/api/categorias` | — | Lista categorias |
+| POST | `/api/categorias` | staff | Cria categoria |
+| PUT | `/api/categorias/:id` | staff | Atualiza categoria |
+| DELETE | `/api/categorias/:id` | staff | Remove categoria (409 se houver notícias vinculadas) |
+| POST | `/api/auth/login` | — | Autentica (autor/administrador/leitor) e devolve um token |
+| POST | `/api/auth/registro` | — | Cadastra um novo jornalista (papel `autor`) |
+| POST | `/api/auth/registro-leitor` | — | Cadastra um novo leitor (só pode comentar) |
+
+Rotas marcadas **staff** exigem `Authorization: Bearer <token>` de um
+`autor`/`administrador`; **leitor** aceita qualquer papel autenticado;
+**admin** exige especificamente `administrador`.
 
 Regras de integridade aplicadas pelo banco (SQLite, `FOREIGN KEY` +
 `PRAGMA foreign_keys = ON`): criar/editar notícia com `categoriaId`
 inexistente → `422`; remover categoria com notícias vinculadas → `409`.
 
+## Autenticação
+
+Login real, verificado no servidor: `POST /api/auth/login` devolve um token
+**JWT** assinado com `JWT_SECRET`, válido por 7 dias. O front guarda esse
+token (`sessionStorage` para staff, `localStorage` para leitor — por isso o
+leitor não precisa logar de novo a cada aba) e o `api.js` anexa
+`Authorization: Bearer <token>` em toda chamada automaticamente. O
+middleware `exigirLogin` valida o token e recarrega o usuário do banco a
+cada requisição; `exigirAdmin` restringe ainda mais (usado na moderação).
+
+## Roadmap: login social (Google/Instagram)
+
+Login com Google e Instagram foi planejado mas **não está ativo** — ambos
+exigem credenciais de OAuth que só o dono do projeto pode gerar:
+
+- **Google**: crie um projeto em [console.cloud.google.com](https://console.cloud.google.com/),
+  configure a tela de consentimento OAuth e gere um Client ID/Secret
+  (leva uns 5 minutos). Preencha `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`
+  no `.env` — a partir daí é adicionar a estratégia `passport-google-oauth20`
+  emitindo o mesmo token JWT que o login por senha já emite hoje.
+- **Instagram**: hoje passa pelo Meta/Facebook Login. Funciona para
+  desenvolvedores/testadores imediatamente, mas exige **revisão do app
+  pela Meta** (dias, com política de privacidade e verificação de negócio)
+  para funcionar com qualquer usuário público.
+
 ## Limitações conhecidas
 
-Projeto acadêmico focado em POO e CRUD fullstack — por simplicidade, o login é
-client-side (`sessionStorage`) e as rotas de escrita da API não exigem token de
-sessão. Não recomendado para produção sem adicionar autenticação/autorização no
-backend (ex.: JWT + middleware de proteção nas rotas de escrita).
+Projeto acadêmico evoluindo para um caso de uso real — autenticação e
+autorização já são reais (JWT no backend), mas ainda não há: rate limiting
+contra força bruta no login, envio de email (recuperação de senha,
+confirmação de cadastro) nem upload de imagem (a notícia usa uma URL
+externa em vez de arquivo).

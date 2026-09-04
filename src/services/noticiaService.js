@@ -56,16 +56,24 @@ export const noticiaService = {
     if (!removido) throw erro('Noticia nao encontrada.', 404);
   },
 
-  adicionarComentario(id, { autorNome, texto }) {
+  adicionarComentario(id, leitor, { texto }) {
     const noticia = noticiaRepo.buscarPorId(id);
     if (!noticia) throw erro('Noticia nao encontrada.', 404);
     let comentario;
     try {
-      comentario = noticia.adicionarComentario(autorNome, texto);
+      comentario = noticia.adicionarComentario({ leitorId: leitor.id, autorNome: leitor.nome, texto });
     } catch (e) {
       throw erro(e.message, 400);
     }
     noticiaRepo.atualizar(noticia.id, noticia);
     return comentario;
+  },
+
+  removerComentario(id, comentarioId) {
+    const noticia = noticiaRepo.buscarPorId(id);
+    if (!noticia) throw erro('Noticia nao encontrada.', 404);
+    const removido = noticia.removerComentario(comentarioId);
+    if (!removido) throw erro('Comentario nao encontrado.', 404);
+    noticiaRepo.atualizar(noticia.id, noticia);
   },
 };

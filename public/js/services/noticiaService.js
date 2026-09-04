@@ -26,8 +26,12 @@ export const noticiaService = {
     return api.removerNoticia(id);
   },
 
-  async comentar(id, { autorNome, texto }) {
+  async comentar(id, texto) {
     if (!texto || !texto.trim()) throw new Error('Escreva um comentario antes de enviar.');
-    return api.comentarNoticia(id, { autorNome, texto });
+    return api.comentarNoticia(id, { texto });
+  },
+
+  removerComentario(noticiaId, comentarioId) {
+    return api.removerComentario(noticiaId, comentarioId);
   },
 };

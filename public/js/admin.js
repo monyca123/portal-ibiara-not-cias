@@ -2,9 +2,11 @@ import { categoriaService } from './services/categoriaService.js';
 import { noticiaService } from './services/noticiaService.js';
 import { categoriaView } from './ui/categoriaView.js';
 import { noticiaView } from './ui/noticiaView.js';
+import { moderacaoView } from './ui/moderacaoView.js';
+import { obterSessao, encerrarSessao } from './sessao.js';
 
-const usuarioLogado = JSON.parse(sessionStorage.getItem('usuario') || 'null');
-if (!usuarioLogado) {
+const usuarioLogado = obterSessao();
+if (!usuarioLogado || usuarioLogado.papel === 'leitor') {
   window.location.href = 'login.html';
 }
 
@@ -20,7 +22,7 @@ function limparErro() {
 
 document.querySelector('#usuario-logado').textContent = `${usuarioLogado.nome} (${usuarioLogado.papel})`;
 document.querySelector('#btn-sair').addEventListener('click', () => {
-  sessionStorage.removeItem('usuario');
+  encerrarSessao();
   window.location.href = 'login.html';
 });
 
@@ -44,6 +46,7 @@ async function criarCategoria(dados) {
 
 async function removerCategoria(id) {
   limparErro();
+  if (!confirm('Remover esta categoria? Só é possível se não houver notícias vinculadas a ela.')) return;
   try {
     await categoriaService.remover(id);
     await atualizarCategorias();
@@ -52,9 +55,30 @@ async function removerCategoria(id) {
   }
 }
 
+let ultimasNoticias = [];
+
 async function atualizarNoticias() {
-  const noticias = await noticiaService.listar({ todas: 1 });
-  noticiaView.renderTabela(noticias, editarNoticia, removerNoticia);
+  ultimasNoticias = await noticiaService.listar({ todas: 1 });
+  noticiaView.renderTabela(ultimasNoticias, editarNoticia, removerNoticia);
+  atualizarModeracao();
+}
+
+function atualizarModeracao() {
+  const comentarios = ultimasNoticias
+    .flatMap((n) => n.comentarios.map((c) => ({ ...c, noticiaId: n.id, noticiaTitulo: n.titulo })))
+    .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
+  moderacaoView.renderLista(comentarios, removerComentario);
+}
+
+async function removerComentario(noticiaId, comentarioId) {
+  limparErro();
+  if (!confirm('Remover este comentário permanentemente?')) return;
+  try {
+    await noticiaService.removerComentario(noticiaId, comentarioId);
+    await atualizarNoticias();
+  } catch (err) {
+    mostrarErro(err.message);
+  }
 }
 
 function editarNoticia(noticia) {

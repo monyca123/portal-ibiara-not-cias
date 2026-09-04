@@ -46,9 +46,7 @@ export default class Noticia {
     this.#publicada = publicada;
     this.#visualizacoes = visualizacoes;
     this.#criadoEm = criadoEm;
-    this.#comentarios = comentarios.map((c) =>
-      c instanceof Comentario ? c : new Comentario(c.autorNome, c.texto, c.id, c.criadoEm)
-    );
+    this.#comentarios = comentarios.map((c) => (c instanceof Comentario ? c : new Comentario(c)));
   }
 
   get id() { return this.#id; }
@@ -77,10 +75,17 @@ export default class Noticia {
     this.#visualizacoes += 1;
   }
 
-  adicionarComentario(autorNome, texto) {
-    const comentario = new Comentario(autorNome, texto);
+  adicionarComentario({ leitorId, autorNome, texto }) {
+    const comentario = new Comentario({ leitorId, autorNome, texto });
     this.#comentarios.push(comentario);
     return comentario;
+  }
+
+  removerComentario(comentarioId) {
+    const indice = this.#comentarios.findIndex((c) => c.id === comentarioId);
+    if (indice === -1) return false;
+    this.#comentarios.splice(indice, 1);
+    return true;
   }
 
   toJSON() {

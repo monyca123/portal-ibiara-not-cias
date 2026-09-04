@@ -5,7 +5,7 @@ function buscarComentarios(noticiaId) {
   return db
     .prepare('SELECT * FROM comentarios WHERE noticia_id = ? ORDER BY criado_em ASC')
     .all(noticiaId)
-    .map((c) => ({ id: c.id, autorNome: c.autor_nome, texto: c.texto, criadoEm: c.criado_em }));
+    .map((c) => ({ id: c.id, leitorId: c.leitor_id, autorNome: c.autor_nome, texto: c.texto, criadoEm: c.criado_em }));
 }
 
 function paraModelo(row) {
@@ -31,10 +31,10 @@ function paraModelo(row) {
 function sincronizarComentarios(noticia) {
   db.prepare('DELETE FROM comentarios WHERE noticia_id = ?').run(noticia.id);
   const inserir = db.prepare(
-    'INSERT INTO comentarios (id, noticia_id, autor_nome, texto, criado_em) VALUES (?, ?, ?, ?, ?)'
+    'INSERT INTO comentarios (id, noticia_id, leitor_id, autor_nome, texto, criado_em) VALUES (?, ?, ?, ?, ?, ?)'
   );
   noticia.comentarios.forEach((c) => {
-    inserir.run(c.id, noticia.id, c.autorNome, c.texto, c.criadoEm);
+    inserir.run(c.id, noticia.id, c.leitorId, c.autorNome, c.texto, c.criadoEm);
   });
 }
 

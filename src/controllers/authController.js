@@ -10,4 +10,9 @@ export const authController = {
     const usuario = authService.registrar(req.body);
     res.status(201).json(usuario);
   },
+
+  registrarLeitor(req, res) {
+    const usuario = authService.registrarLeitor(req.body);
+    res.status(201).json(usuario);
+  },
 };

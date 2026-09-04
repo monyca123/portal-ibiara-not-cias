@@ -1,8 +1,13 @@
 import { noticiaService } from './services/noticiaService.js';
+import { obterSessao } from './sessao.js';
 
 const conteudoEl = document.getElementById('noticia-conteudo');
 const comentariosEl = document.getElementById('lista-comentarios');
+const promptLoginEl = document.getElementById('prompt-login');
 const formComentarioEl = document.getElementById('form-comentario');
+const comentarioUsuarioEl = document.getElementById('comentario-usuario');
+const comentarioErroEl = document.getElementById('comentario-erro');
+const btnEnviarEl = document.getElementById('btn-enviar-comentario');
 
 function escapeHtml(texto) {
   const div = document.createElement('div');
@@ -17,6 +22,19 @@ function imagemSegura(url) {
 
 const params = new URLSearchParams(window.location.search);
 const noticiaId = params.get('id');
+
+const sessao = obterSessao();
+if (sessao) {
+  promptLoginEl.classList.add('d-none');
+  formComentarioEl.classList.remove('d-none');
+  comentarioUsuarioEl.textContent = sessao.nome;
+} else {
+  promptLoginEl.classList.remove('d-none');
+  formComentarioEl.classList.add('d-none');
+  const voltar = encodeURIComponent(window.location.pathname + window.location.search);
+  document.getElementById('link-entrar').href = `leitor-entrar.html?voltar=${voltar}`;
+  document.getElementById('link-cadastro').href = `leitor-cadastro.html?voltar=${voltar}`;
+}
 
 async function carregarNoticia() {
   if (!noticiaId) {
@@ -64,14 +82,21 @@ function renderizarComentarios(comentarios) {
 
 formComentarioEl.addEventListener('submit', async (evento) => {
   evento.preventDefault();
-  const dados = Object.fromEntries(new FormData(formComentarioEl));
+  comentarioErroEl.classList.add('d-none');
+  const texto = formComentarioEl.elements.texto.value;
 
+  btnEnviarEl.disabled = true;
+  btnEnviarEl.textContent = 'Enviando...';
   try {
-    await noticiaService.comentar(noticiaId, dados);
+    await noticiaService.comentar(noticiaId, texto);
     formComentarioEl.reset();
     await carregarNoticia();
   } catch (err) {
-    alert(err.message);
+    comentarioErroEl.textContent = err.message;
+    comentarioErroEl.classList.remove('d-none');
+  } finally {
+    btnEnviarEl.disabled = false;
+    btnEnviarEl.textContent = 'Enviar comentário';
   }
 });
 

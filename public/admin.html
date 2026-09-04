@@ -29,9 +29,11 @@
           <div class="card-body">
             <form id="form-categoria" class="row g-2 mb-3">
               <div class="col-12">
+                <label for="cat-nome" class="form-label visually-hidden">Nome da categoria</label>
                 <input type="text" id="cat-nome" class="form-control" placeholder="Nome da categoria" required />
               </div>
               <div class="col-8">
+                <label for="cat-tipo" class="form-label visually-hidden">Tipo da categoria</label>
                 <select id="cat-tipo" class="form-select" required>
                   <option value="local">Local</option>
                   <option value="geral">Geral</option>
@@ -41,7 +43,7 @@
                 <button type="submit" class="btn btn-dark w-100">+</button>
               </div>
             </form>
-            <ul id="lista-categorias" class="list-group"></ul>
+            <ul id="lista-categorias" class="list-group" aria-live="polite"></ul>
           </div>
         </div>
       </section>
@@ -67,10 +69,22 @@
                 <th class="text-end">Ações</th>
               </tr>
             </thead>
-            <tbody id="tabela-noticias">
+            <tbody id="tabela-noticias" aria-live="polite">
               <tr><td colspan="6" class="text-center text-muted py-4">Carregando...</td></tr>
             </tbody>
           </table>
+        </div>
+      </section>
+    </div>
+
+    <div class="row g-4 mt-1">
+      <!-- ===================== MODERAÇÃO DE COMENTÁRIOS ===================== -->
+      <section class="col-12">
+        <div class="card">
+          <div class="card-header bg-danger text-white fw-bold">Moderação de comentários</div>
+          <div class="card-body">
+            <div id="lista-moderacao" class="list-group" aria-live="polite"></div>
+          </div>
         </div>
       </section>
     </div>

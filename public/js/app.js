@@ -1,8 +1,24 @@
 import { categoriaService } from './services/categoriaService.js';
 import { noticiaService } from './services/noticiaService.js';
+import { obterSessao, encerrarSessao } from './sessao.js';
 
 const listaNoticiasEl = document.getElementById('lista-noticias');
 const filtrosCategoriaEl = document.getElementById('filtros-categoria');
+
+const sessaoLeitor = obterSessao();
+const linkLeitorEl = document.getElementById('link-leitor');
+const leitorSessaoEl = document.getElementById('leitor-sessao');
+if (sessaoLeitor) {
+  leitorSessaoEl.textContent = `Olá, ${sessaoLeitor.nome}`;
+  leitorSessaoEl.classList.remove('d-none');
+  linkLeitorEl.textContent = 'Sair';
+  linkLeitorEl.href = '#';
+  linkLeitorEl.addEventListener('click', (evento) => {
+    evento.preventDefault();
+    encerrarSessao();
+    window.location.reload();
+  });
+}
 
 function escapeHtml(texto) {
   const div = document.createElement('div');
