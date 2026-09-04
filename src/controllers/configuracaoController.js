@@ -5,8 +5,8 @@ export const configuracaoController = {
     res.json(configuracaoService.obter().toJSON());
   },
 
-  atualizar(req, res) {
-    const configuracao = configuracaoService.atualizar(req.body);
+  async atualizar(req, res) {
+    const configuracao = await configuracaoService.atualizar(req.body);
     res.json(configuracao.toJSON());
   },
 };
